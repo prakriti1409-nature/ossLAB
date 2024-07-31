@@ -1,0 +1,63 @@
+ANS 5:
+
+
+This code implements a basic calculator that can evaluate arithmetic expressions using the Shunting Yard algorithm to convert infix expressions to Reverse Polish Notation (RPN) and then compute the result using a stack-based approach.
+
+1. Data Structures
+   - `simple_stack_t`: A stack structure used to manage operators and intermediate results.
+     - `pos`: An integer tracking the current top of the stack.
+     - `data`: An array that stores the elements in the stack.
+   - `simple_queue_t`: A queue structure used to hold tokens during the Shunting Yard algorithm.
+     - `front`: The index of the front of the queue.
+     - `back`: The index of the back of the queue.
+     - `data`: An array that stores the elements in the queue.
+
+2. **Stack Functions**
+   - `void stack_init(simple_stack_t *s)`: Initializes the stack by setting the `pos` to -1 and clearing the `data` array.
+   - `void stack_push(byte_8 data, simple_stack_t *s)`: Pushes a value onto the stack. If the stack is full, it exits the program with an overflow error.
+   - `byte_8 stack_pop(simple_stack_t *s)`: Pops a value off the stack. If the stack is empty, it exits with an error.
+   - `int stack_is_empty(const simple_stack_t *s)`: Checks if the stack is empty by returning whether `pos` is -1.
+   - `byte_8 stack_peek(const simple_stack_t *s)`: Returns the top value of the stack without popping it. If the stack is empty, it exits with an error.
+
+3. Queue Functions
+   - `void queue_init(simple_queue_t* q)`: Initializes the queue by setting `front` and `back` to -1 and clearing the `data` array.
+   - `void queue_enqueue(token_t data, simple_queue_t* q)`: Enqueues a value onto the queue. If the queue is full, it exits with an overflow error.
+   - `token_t queue_dequeue(simple_queue_t* q)`: Dequeues a value from the front of the queue. If the queue is empty, it exits with an error.
+   - `int queue_is_empty(const simple_queue_t* q)`**: Checks if the queue is empty by returning whether `front` is -1 or `front` is greater than `back`.
+
+4. Operator Precedence and Associativity
+   - `int get_op_precedence(char op)`: Returns the precedence of an operator. Higher values indicate higher precedence. Supported operators are `+`, `-`, `*`, `/`, `%`, and `^`.
+   - `int is_higher_or_equal_precedence(char op1, char op2)`**: Checks if `op1` has higher or equal precedence compared to `op2`.
+   - int is_higher_precedence(char op1, char op2)`: Checks if `op1` has strictly higher precedence compared to `op2`.
+   - `int is_left_assoc_operator(char op)`: Checks if an operator is left-associative. Left-associative operators include `+`, `-`, `*`, `/`, and `%`.
+   - int is_right_assoc_operator(char op)`: Checks if an operator is right-associative. The right-associative operator in this implementation is `^`.
+
+5. Shunting Yard Algorithm
+   - `void shunting_yard(const char* input, simple_stack_t* ops, simple_queue_t* output)` Implements the Shunting Yard algorithm to convert an infix expression (`input`) into RPN, which is then stored in `output`.
+     - Input Handling:
+       - The function iterates through the input string character by character.
+       - It skips spaces and tabs.
+       - It processes operators by checking their precedence and associativity and moves them from the stack to the output queue as needed.
+       - It handles parentheses to ensure balanced expressions.
+       - It converts numeric characters into numbers and enqueues them directly into the output queue.
+     - Finalization
+       - The function checks if any operators are left in the stack and moves them to the output queue.
+       - It also ensures that parentheses are balanced.
+
+6. RPN Calculation
+   - byte_8 compute_rpn(simple_queue_t *q)`: Computes the result of an expression in RPN stored in `q`.
+     - It iterates through the queue, processing each token.
+     - If a token is a number, it is pushed onto a working stack.
+     - If a token is an operator, the required number of operands is popped from the stack, the operation is performed, and the result is pushed back onto the stack.
+     - At the end, the stack should contain exactly one value, which is the result of the expression.
+
+ 7. Error Handling
+   - The code includes error handling for various conditions, such as:
+     - Stack overflow when pushing an element.
+     - Queue overflow when enqueuing an element.
+     - Empty stack or queue when popping or dequeuing.
+     - Unbalanced parentheses in the input.
+     - Invalid characters in the input.
+     - Division or modulo by zero during RPN computation.
+     - Invalid expressions that result in more than one value left on the stack after RPN computation.
+
