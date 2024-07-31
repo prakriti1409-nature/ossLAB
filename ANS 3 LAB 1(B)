@@ -1,0 +1,99 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAX_PARAGRAPH_SIZE 1000
+#define MAX_WORD_LENGTH 50
+#define MAX_WORDS 200
+
+typedef struct {
+    char word[MAX_WORD_LENGTH];
+    int count;
+} WordFrequency;
+
+void to_lowercase(char* str) {
+    for (int i = 0; str[i]; i++) {
+        str[i] = tolower(str[i]);
+    }
+}
+
+int is_word_delimiter(char c) {
+    return c == ' ' || c == '\t' || c == '\n' || c == '.' || c == ',' || c == '!' || c == '?' || c == ';' || c == ':';
+}
+
+void count_word_frequencies(char* paragraph, WordFrequency* word_frequencies, int* word_count) {
+    char word[MAX_WORD_LENGTH];
+    int index = 0;
+
+    while (*paragraph) {
+        if (is_word_delimiter(*paragraph)) {
+            if (index > 0) {
+                word[index] = '\0';
+                to_lowercase(word);
+
+                int found = 0;
+                for (int i = 0; i < *word_count; i++) {
+                    if (strcmp(word_frequencies[i].word, word) == 0) {
+                        word_frequencies[i].count++;
+                        found = 1;
+                        break;
+                    }
+                }
+
+                if (!found && *word_count < MAX_WORDS) {
+                    strcpy(word_frequencies[*word_count].word, word);
+                    word_frequencies[*word_count].count = 1;
+                    (*word_count)++;
+                }
+
+                index = 0;
+            }
+        } else {
+            if (index < MAX_WORD_LENGTH - 1) {
+                word[index++] = *paragraph;
+            }
+        }
+
+        paragraph++;
+    }
+
+    if (index > 0) {
+        word[index] = '\0';
+        to_lowercase(word);
+
+        int found = 0;
+        for (int i = 0; i < *word_count; i++) {
+            if (strcmp(word_frequencies[i].word, word) == 0) {
+                word_frequencies[i].count++;
+                found = 1;
+                break;
+            }
+        }
+
+        if (!found && *word_count < MAX_WORDS) {
+            strcpy(word_frequencies[*word_count].word, word);
+            word_frequencies[*word_count].count = 1;
+            (*word_count)++;
+        }
+    }
+}
+
+void print_word_frequencies(WordFrequency* word_frequencies, int word_count) {
+    printf("\nWord Frequencies:\n");
+    for (int i = 0; i < word_count; i++) {
+        printf("%s: %d\n", word_frequencies[i].word, word_frequencies[i].count);
+    }
+}
+
+int main() {
+    char paragraph[MAX_PARAGRAPH_SIZE];
+    WordFrequency word_frequencies[MAX_WORDS] = {0};
+    int word_count = 0;
+    printf("Enter a paragraph: ");
+    fgets(paragraph, MAX_PARAGRAPH_SIZE, stdin);
+    count_word_frequencies(paragraph, word_frequencies, &word_count);
+    print_word_frequencies(word_frequencies, word_count);
+
+    return 0;
+}
+
