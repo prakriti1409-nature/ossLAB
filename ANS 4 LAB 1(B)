@@ -1,0 +1,143 @@
+ANS 4:
+
+TAKEN FROM :https://gist.github.com/Suman2593/d357d24310b053838077dab5ca2b0c1d
+
+
+Code Structure Overview
+1. **Libraries and Macros:**
+   - The program includes the `stdio.h` library for input/output functions.
+   - `conio.h` is included but is not used in this code (it can be omitted).
+   - Two macros are defined:
+     - `INFINITY` is set to 9999 to represent an infinite distance (or no direct path).
+     - `MAX` is set to 10, defining the maximum number of vertices in the graph.
+
+2. **Main Function:**
+   - The `main` function initializes the graph, reads input from the user, and calls the `dijkstra` function to compute the shortest paths.
+
+3. **Dijkstra Function:**
+   - The `dijkstra` function implements Dijkstra's algorithm to find the shortest path from a starting node to all other nodes in the graph.
+
+
+1. `int main()`
+The `main` function performs the following tasks:
+- **Input Graph Size:**
+  ```c
+  printf("Enter no. of vertices:");
+  scanf("%d",&n);
+  ```
+  - Prompts the user to enter the number of vertices (`n`) in the graph.
+
+- **Input Adjacency Matrix:**
+  ```c
+  printf("\nEnter the adjacency matrix:\n");
+  for(i=0;i<n;i++)
+    for(j=0;j<n;j++)
+      scanf("%d",&G[i][j]);
+  ```
+  - Reads the adjacency matrix, where `G[i][j]` represents the weight of the edge between node `i` and node `j`. If there is no edge, the weight is typically set to 0.
+
+- **Input Starting Node:**
+  ```c
+  printf("\nEnter the starting node:");
+  scanf("%d",&u);
+  ```
+  - Prompts the user to enter the starting node (`u`) from which the shortest paths will be calculated.
+
+- **Call Dijkstra Function:**
+  ```c
+  dijkstra(G,n,u);
+  ```
+  - Calls the `dijkstra` function with the graph, number of vertices, and starting node as arguments.
+
+2. `void dijkstra(int G[MAX][MAX], int n, int startnode)`
+This function implements Dijkstra's algorithm:
+- **Variable Declarations:**
+  ```c
+  int cost[MAX][MAX], distance[MAX], pred[MAX];
+  int visited[MAX], count, mindistance, nextnode, i, j;
+  ```
+  - `cost[MAX][MAX]`: A matrix that stores the cost to travel between nodes.
+  - `distance[MAX]`: An array that stores the shortest distance from the starting node to each node.
+  - `pred[MAX]`: An array that stores the predecessor of each node in the shortest path.
+  - `visited[MAX]`: An array to keep track of visited nodes.
+  - `count`, `mindistance`, `nextnode`: Variables used in the algorithm's control flow.
+
+- Initialize the Cost Matrix:
+  ```c
+  for(i=0;i<n;i++)
+    for(j=0;j<n;j++)
+      if(G[i][j]==0)
+        cost[i][j]=INFINITY;
+      else
+        cost[i][j]=G[i][j];
+  ```
+  - Converts the adjacency matrix `G` into a `cost` matrix, where `cost[i][j]` is set to `INFINITY` if there is no direct edge between `i` and `j`.
+
+- Initialize Arrays:
+  ```c
+  for(i=0;i<n;i++)
+  {
+    distance[i] = cost[startnode][i];
+    pred[i] = startnode;
+    visited[i] = 0;
+  }
+  distance[startnode] = 0;
+  visited[startnode] = 1;
+  count = 1;
+  ```
+  - `distance[i]` is initialized to the direct distance from the start node to node `i`.
+  - `pred[i]` is set to the starting node, indicating that initially, the shortest known path to each node is directly from the start node.
+  - `visited[i]` is set to 0, meaning no nodes have been visited yet.
+  - `distance[startnode]` is set to 0 because the distance from the start node to itself is zero.
+  - `visited[startnode]` is set to 1 because the start node is immediately marked as visited.
+
+- Dijkstra's Main Loop:
+  ```c
+  while(count < n-1)
+  {
+    mindistance = INFINITY;
+    for(i=0;i<n;i++)
+      if(distance[i] < mindistance && !visited[i])
+      {
+        mindistance = distance[i];
+        nextnode = i;
+      }
+    visited[nextnode] = 1;
+    for(i=0;i<n;i++)
+      if(!visited[i])
+        if(mindistance + cost[nextnode][i] < distance[i])
+        {
+          distance[i] = mindistance + cost[nextnode][i];
+          pred[i] = nextnode;
+        }
+    count++;
+  }
+  ```
+  - The loop iterates until all nodes have been visited (`count < n-1`).
+  - In each iteration, the node with the minimum distance that hasn't been visited (`nextnode`) is identified.
+  - The algorithm checks if a shorter path to each unvisited node exists via `nextnode`. If a shorter path is found, the `distance` and `pred` arrays are updated.
+
+- Print the Shortest Paths and Distances:
+
+  for(i=0;i<n;i++)
+    if(i != startnode)
+    {
+      printf("\nDistance of node%d=%d", i, distance[i]);
+      printf("\nPath=%d", i);
+      j = i;
+      do
+      {
+        j = pred[j];
+        printf("<-%d", j);
+      } while(j != startnode);
+    }
+  ```
+  - For each node `i` that is not the start node, the function prints the shortest distance and the path from the start node to `i`.
+  - The path is reconstructed using the `pred` array, tracing back from node `i` to the start node.
+
+Summary
+-Input: The program reads the number of vertices, the adjacency matrix of the graph, and the starting node.
+- Processing: It initializes the cost, distance, predecessor, and visited arrays. Dijkstra's algorithm is then executed to find the shortest paths.
+- Output: The program outputs the shortest distance from the starting node to every other node, along with the paths taken to achieve these shortest distances.
+
+This implementation of Dijkstra's algorithm is a straightforward way to find the shortest paths in a graph with non-negative weights, using an adjacency matrix to represent the graph.
